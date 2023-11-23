@@ -1,2 +1,3 @@
-# front pkg manage 
+# front pkg manage
 
+go mod tidy010

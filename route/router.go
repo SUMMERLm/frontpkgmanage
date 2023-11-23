@@ -17,8 +17,8 @@ func InitRouter() *gin.Engine {
 	router.POST("/front/single/pkg/upload", api.Upload)
 	//multi pkg upload
 	router.POST("/front/multi/pkg/upload", api.UploadMultiPkg)
-	//serverless pod quota manage
+	//pkg recycle
 	router.POST("/front/pkg/recycle", api.Recycle)
-
+	router.GET("/downloadFiles", api.DownloadFileService)
 	return router
 }

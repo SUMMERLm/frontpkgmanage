@@ -5,17 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"os"
 )
-
-var done bool
-var doScale = "0"
-var doQuotaScale = "0"
-
-type Hpa_msg struct {
-	Namespace  string `json:"namespace"`
-	Name       string `json:"name"`
-	Hpa_action string `json:"hpaAction"`
-}
 
 func GetIndex(c *gin.Context) {
 	c.String(200, "Hello, get test")
@@ -55,15 +46,40 @@ func UploadMultiPkg(c *gin.Context) {
 
 func Recycle(c *gin.Context) {
 	// Multipart form
-	form, _ := c.MultipartForm()
-	files := form.File["upload[]"]
-
-	for _, file := range files {
-		log.Println(file.Filename)
-		//TODO 结合nginx vhost管理配置
-		_ = "./" + file.Filename
-		// 删除指定目录下指定文件
-
+	fileDir := c.Query("filedir")
+	fileName := c.Query("fileName")
+	_, errByOpenFile := os.Open(fileDir + "/" + fileName)
+	//非空处理
+	if errByOpenFile != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "失败",
+			"error":   "资源不存在",
+		})
+		c.Redirect(http.StatusFound, "/404")
+		return
 	}
-	c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
+	// 删除指定目录下指定文件
+	os.Remove(fileDir + "/" + fileName)
+}
+
+func DownloadFileService(c *gin.Context) {
+	fileDir := c.Query("filedir")
+	fileName := c.Query("fileName")
+	_, errByOpenFile := os.Open(fileDir + "/" + fileName)
+	//非空处理
+	if errByOpenFile != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "失败",
+			"error":   "资源不存在",
+		})
+		c.Redirect(http.StatusFound, "/404")
+		return
+	}
+	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Disposition", "attachment; filename="+fileName)
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.File(fileDir + "/" + fileName)
+	return
 }

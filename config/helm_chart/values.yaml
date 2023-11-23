@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: 172.17.9.231:8880/serverless/serverless_hpa
+  repository: 172.17.9.231:8880/frontendpkgmanage/serverless_hpa
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "v2.4"
@@ -90,7 +90,3 @@ tolerations:
     operator: Equal
 
 affinity: {}
-
-configmap:
-  qpsQuotaUrl: "http://192.168.101.74:32000/serverles_qps_quota_hpa"
-  etcdEndpoint: "192.168.101.11:31015"

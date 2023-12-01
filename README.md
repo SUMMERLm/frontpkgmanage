@@ -1,3 +1,2 @@
-# front pkg manage
-
-go mod tidy010
+frontend pkg manage 
+download and upload pkg etc

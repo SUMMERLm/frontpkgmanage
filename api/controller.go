@@ -3,6 +3,8 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -18,15 +20,45 @@ func PostTest(c *gin.Context) {
 }
 
 func Upload(c *gin.Context) {
-	// 单文件
 	file, _ := c.FormFile("file")
+	fileDir := c.Query("filedir")
 	log.Println(file.Filename)
-	//TODO 结合nginx vhost管理配置
-	dst := "./" + file.Filename
-	// 上传文件至指定的完整文件路径
+	//path := "/var/frontend/"
+	path := viper.GetString("frontEnd.pkgPath") + fileDir
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err := os.Mkdir(path, os.ModePerm)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	dst := path + file.Filename
 	c.SaveUploadedFile(file, dst)
-
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+}
+
+func VhostPkgManage(c *gin.Context) {
+	var err error
+	src := c.PostForm("src")
+	dst := c.PostForm("dst")
+	sourceFileStat, err := os.Stat(src)
+	if err != nil {
+		c.String(400, err.Error())
+	}
+	if !sourceFileStat.Mode().IsRegular() {
+		c.String(400, err.Error())
+	}
+	source, err := os.Open(src)
+	if err != nil {
+		c.String(400, err.Error())
+	}
+	defer source.Close()
+	destination, err := os.Create(dst)
+	if err != nil {
+		c.String(400, err.Error())
+	}
+	defer destination.Close()
+	nBytes, err := io.Copy(destination, source)
+	c.String(200, string(nBytes))
 }
 
 func UploadMultiPkg(c *gin.Context) {
@@ -46,7 +78,7 @@ func UploadMultiPkg(c *gin.Context) {
 
 func Recycle(c *gin.Context) {
 	// Multipart form
-	fileDir := c.Query("filedir")
+	fileDir := viper.GetString("frontEnd.pkgPath") + c.Query("filedir")
 	fileName := c.Query("fileName")
 	_, errByOpenFile := os.Open(fileDir + "/" + fileName)
 	//非空处理
@@ -64,7 +96,7 @@ func Recycle(c *gin.Context) {
 }
 
 func DownloadFileService(c *gin.Context) {
-	fileDir := c.Query("filedir")
+	fileDir := viper.GetString("frontEnd.pkgPath") + c.Query("filedir")
 	fileName := c.Query("fileName")
 	_, errByOpenFile := os.Open(fileDir + "/" + fileName)
 	//非空处理

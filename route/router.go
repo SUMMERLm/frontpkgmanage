@@ -19,6 +19,7 @@ func InitRouter() *gin.Engine {
 	router.POST("/front/multi/pkg/upload", api.UploadMultiPkg)
 	//pkg recycle
 	router.POST("/front/pkg/recycle", api.Recycle)
-	router.GET("/downloadFiles", api.DownloadFileService)
+	router.GET("/front/pkg/downloadFiles", api.DownloadFileService)
+	router.POST("/front/pkg/vhost/pkg/manage", api.VhostPkgManage)
 	return router
 }

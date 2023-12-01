@@ -96,7 +96,7 @@ func Recycle(c *gin.Context) {
 }
 
 func DownloadFileService(c *gin.Context) {
-	fileDir := viper.GetString("frontEnd.pkgPath") + c.Query("filedir")
+	fileDir := viper.GetString("frontEnd.pkgPath") + c.Query("fileDir")
 	fileName := c.Query("fileName")
 	_, errByOpenFile := os.Open(fileDir + "/" + fileName)
 	//非空处理

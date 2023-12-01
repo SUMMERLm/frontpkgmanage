@@ -3,4 +3,5 @@ server:
   addr: :8000
 frontEnd:
   pkgPath: /etc/hyperos/frontend
+  pkgPath1: /Users/lumingming/hyperos/frontend
   vhostPath: /var/www/hyperos/

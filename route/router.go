@@ -14,11 +14,11 @@ func InitRouter() *gin.Engine {
 	// post Test
 	router.POST("/test", api.PostTest)
 	//pkg upload
-	router.POST("/front/single/pkg/upload", api.Upload)
+	router.POST("/front/pkg/upload", api.Upload)
 	//multi pkg upload
 	router.POST("/front/multi/pkg/upload", api.UploadMultiPkg)
 	//pkg recycle
-	router.POST("/front/pkg/recycle", api.Recycle)
+	router.POST("/front/pkg/delete", api.Recycle)
 	router.GET("/front/pkg/downloadFiles", api.DownloadFileService)
 	router.POST("/front/pkg/vhost/pkg/manage", api.VhostPkgManage)
 	return router
